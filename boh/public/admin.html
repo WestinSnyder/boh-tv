@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOH Score Screen — Admin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #E31837;
+      --navy: #1B365D;
+      --border: #d0d0d0;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #666;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .logo { font-size: 1.5rem; font-weight: 900; }
+    header h1 { font-size: 1.1rem; font-weight: 600; opacity: 0.9; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1140px;
+      margin: 28px auto;
+      padding: 0 24px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── ADMIN GRID (mirrors display layout) ── */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .ag-focus-item { grid-column: 1 / span 2; grid-row: 1; }
+    .ag-monthly    { grid-column: 3;           grid-row: 1; }
+    .ag-cem-col    { grid-column: 1;           grid-row: 2; display: flex; flex-direction: column; gap: 16px; }
+    .ag-cem-col > .card { flex: 1; }
+    .ag-erqa       { grid-column: 2 / span 2;  grid-row: 2; }
+    .ag-food-row   { grid-column: 1 / span 3;  grid-row: 3; display: flex; gap: 16px; align-items: start; }
+    .ag-food-row > .card { flex: 1; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .card-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: 10px 10px 0 0;
+    }
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafafa;
+      transition: border-color 0.15s;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--navy);
+      background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .field select { cursor: pointer; }
+
+    /* Price prefix "$" */
+    .price-wrap {
+      display: flex;
+      align-items: stretch;
+    }
+    .price-prefix {
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      background: #eee;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: 6px 0 0 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+    .price-wrap input {
+      border-radius: 0 6px 6px 0 !important;
+    }
+    .field input[readonly] {
+      background: #f0f0f0;
+      color: var(--muted);
+      cursor: default;
+    }
+
+    /* CEM goal/actual side by side */
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Food sections */
+    .food-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cycling-rows-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .cycling-row {
+      background: #f6f8fb;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .cycling-row-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cycling-row-header:hover { background: #eef2f8; }
+    .btn-toggle-row {
+      background: none;
+      border: none;
+      font-size: 0.7rem;
+      color: var(--navy);
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+    .btn-toggle-row.open { transform: rotate(90deg); }
+    .cycling-row-preview {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cycling-row-fields {
+      padding: 0 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cycling-row-fields.collapsed { display: none; }
+    .cycling-row-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+    .food-sublabel {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-bottom: 6px;
+    }
+    .food-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 6px 0 2px;
+    }
+    .food-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-add-row {
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+      cursor: pointer;
+      flex: 1;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-add-row:hover { background: #eef2f8; }
+    .btn-clear-rows {
+      background: none;
+      border: 1px solid #e0c0c0;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--red);
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-clear-rows:hover { background: #fff0f0; }
+    .btn-remove-row {
+      background: none;
+      border: 1px solid #e0c0c0;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      color: var(--red);
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .btn-remove-row:hover { background: #fff0f0; }
+
+    /* ── SUBMIT ── */
+    .submit-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn {
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 12px 32px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-red   { background: var(--red); }
+    .btn-navy  { background: var(--navy); }
+
+    .toast {
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+    }
+    .toast.success { color: #1a7f37; }
+    .toast.error   { color: var(--red); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">BOH</div>
+  <h1>Score Screen — Admin</h1>
+</header>
+
+<main>
+  <form id="adminForm">
+
+    <!-- GRID -->
+    <div class="admin-grid">
+
+      <!-- row 1, cols 1-2 -->
+      <div class="card ag-focus-item">
+        <div class="card-header">Focus Item</div>
+        <div class="card-body">
+          <div class="field">
+            <label>Item Name</label>
+            <input type="text" id="focusItemName" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <input type="text" id="focusItemDesc" />
+          </div>
+        </div>
+      </div>
+
+      <!-- row 1, col 3 -->
+      <div class="card ag-monthly">
+        <div class="card-header">Monthly Focus</div>
+        <div class="card-body">
+          <div class="field">
+            <label>Focus Text</label>
+            <input type="text" id="monthlyFocus" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <input type="text" id="monthlyFocusDesc" />
+          </div>
+        </div>
+      </div>
+
+      <!-- row 2, col 1: both CEM metrics stacked -->
+      <div class="ag-cem-col">
+        <div class="card">
+          <div class="card-header" id="cemCard1Header">CEM — Metric 1</div>
+          <input type="hidden" id="cemLabel1" />
+          <div class="card-body">
+            <div class="score-row">
+              <div class="field">
+                <label>Goal</label>
+                <input type="number" id="cemGoal1" />
+              </div>
+              <div class="field">
+                <label>Actual</label>
+                <input type="number" id="cemActual1" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="cemCard2Header">CEM — Metric 2</div>
+          <input type="hidden" id="cemLabel2" />
+          <div class="card-body">
+            <div class="score-row">
+              <div class="field">
+                <label>Goal</label>
+                <input type="number" id="cemGoal2" />
+              </div>
+              <div class="field">
+                <label>Actual</label>
+                <input type="number" id="cemActual2" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- row 2, cols 2-3 -->
+      <div class="card ag-erqa">
+        <div class="card-header">ERQA Opportunities</div>
+        <div class="card-body">
+          <div class="field">
+            <label>Title</label>
+            <input type="text" id="erqaTitle" />
+          </div>
+          <div class="field">
+            <label>Body Text</label>
+            <textarea id="erqaBody"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- row 3: both food sections side by side -->
+      <div class="ag-food-row">
+      <div class="card">
+        <div class="card-header">Food Cost</div>
+        <div class="card-body">
+          <div class="food-sublabel">Cycling Rows</div>
+          <div class="cycling-rows-wrap" id="foodCostCyclingRowsWrap"></div>
+          <div class="food-actions">
+            <button type="button" class="btn-add-row" id="addFoodCostCyclingRowBtn">+ Add Row</button>
+            <button type="button" class="btn-clear-rows" onclick="clearCyclingRows('foodCost')">Clear All</button>
+          </div>
+          <hr class="food-divider" />
+          <div class="food-sublabel">Pinned Row (always shown)</div>
+          <div class="field">
+            <label>Item</label>
+            <input type="text" id="foodCostPinnedItem" value="Total Cost" readonly />
+          </div>
+          <div class="food-row">
+            <div class="field">
+              <label>Price</label>
+              <div class="price-wrap">
+                <span class="price-prefix">$</span>
+                <input type="text" id="foodCostPinnedPrice" placeholder="0.00" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Month</label>
+              <select id="foodCostPinnedMonth">
+                <option value="">— Select —</option>
+                <option>January</option><option>February</option><option>March</option>
+                <option>April</option><option>May</option><option>June</option>
+                <option>July</option><option>August</option><option>September</option>
+                <option>October</option><option>November</option><option>December</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Food Waste</div>
+        <div class="card-body">
+          <div class="food-sublabel">Cycling Rows</div>
+          <div class="cycling-rows-wrap" id="foodWasteCyclingRowsWrap"></div>
+          <div class="food-actions">
+            <button type="button" class="btn-add-row" id="addFoodWasteCyclingRowBtn">+ Add Row</button>
+            <button type="button" class="btn-clear-rows" onclick="clearCyclingRows('foodWaste')">Clear All</button>
+          </div>
+          <hr class="food-divider" />
+          <div class="food-sublabel">Pinned Row (always shown)</div>
+          <div class="field">
+            <label>Item</label>
+            <input type="text" id="foodWastePinnedItem" value="Total Waste" readonly />
+          </div>
+          <div class="food-row">
+            <div class="field">
+              <label>Price</label>
+              <div class="price-wrap">
+                <span class="price-prefix">$</span>
+                <input type="text" id="foodWastePinnedPrice" placeholder="0.00" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Month</label>
+              <select id="foodWastePinnedMonth">
+                <option value="">— Select —</option>
+                <option>January</option><option>February</option><option>March</option>
+                <option>April</option><option>May</option><option>June</option>
+                <option>July</option><option>August</option><option>September</option>
+                <option>October</option><option>November</option><option>December</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div> <!-- end ag-food-row -->
+
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-bar">
+      <button type="submit" id="btnSave" class="btn btn-red">Upload and Save</button>
+      <button type="submit" id="btnNoSave" class="btn btn-navy">Upload and Don't Save</button>
+      <span class="toast" id="toast"></span>
+    </div>
+
+  </form>
+</main>
+
+<script>
+  const API_URL = '/boh/api/data';
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function escAttr(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function monthSelectHTML(cls, selected) {
+    const opts = ['— Select —', ...MONTHS].map((m, i) => {
+      const val = i === 0 ? '' : m;
+      const sel = val === selected ? ' selected' : '';
+      return `<option value="${val}"${sel}>${m}</option>`;
+    }).join('');
+    return `<select class="${cls}">${opts}</select>`;
+  }
+
+  function stripDollar(val) {
+    return String(val).replace(/^\$/, '');
+  }
+
+  function toggleCyclingRow(btn) {
+    const fields = btn.closest('.cycling-row').querySelector('.cycling-row-fields');
+    const isOpen = !fields.classList.contains('collapsed');
+    fields.classList.toggle('collapsed', isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  function updateRowPreview(input) {
+    const preview = input.closest('.cycling-row').querySelector('.cycling-row-preview');
+    preview.textContent = input.value.trim() || 'New row';
+  }
+
+  function clearCyclingRows(section) {
+    const wrap = document.getElementById(`${section}CyclingRowsWrap`);
+    if (wrap) wrap.innerHTML = '';
+  }
+
+  function addCyclingRowEl(section, item = '', price = '', month = '') {
+    const wrap = document.getElementById(`${section}CyclingRowsWrap`);
+    const div = document.createElement('div');
+    div.className = 'cycling-row';
+    const preview = item.trim() || 'New row';
+    div.innerHTML = `
+      <div class="cycling-row-header">
+        <button type="button" class="btn-toggle-row" onclick="toggleCyclingRow(this)">▶</button>
+        <span class="cycling-row-preview">${escAttr(preview)}</span>
+        <button type="button" class="btn-remove-row" onclick="this.closest('.cycling-row').remove()">✕</button>
+      </div>
+      <div class="cycling-row-fields collapsed">
+        <div class="field"><label>Item</label><input type="text" class="${section}-item" value="${escAttr(item)}" oninput="updateRowPreview(this)" /></div>
+        <div class="cycling-row-meta">
+          <div class="field"><label>Price</label>
+            <div class="price-wrap">
+              <span class="price-prefix">$</span>
+              <input type="text" class="${section}-price" value="${escAttr(stripDollar(price))}" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="field"><label>Month</label>${monthSelectHTML(`${section}-month`, month)}</div>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(div);
+  }
+
+  function loadFoodSection(section, fc) {
+    const wrap = document.getElementById(`${section}CyclingRowsWrap`);
+    if (wrap) { wrap.innerHTML = ''; (fc?.cycling || []).forEach(r => addCyclingRowEl(section, r.item, r.price, r.month)); }
+    const pinnedItem  = document.getElementById(`${section}PinnedItem`);
+    const pinnedPrice = document.getElementById(`${section}PinnedPrice`);
+    const pinnedMonth = document.getElementById(`${section}PinnedMonth`);
+    if (pinnedItem)  pinnedItem.value  = fc?.pinned?.item  || '';
+    if (pinnedPrice) pinnedPrice.value = stripDollar(fc?.pinned?.price || '');
+    if (pinnedMonth) pinnedMonth.value = fc?.pinned?.month || '';
+  }
+
+  function buildFoodSection(section) {
+    return {
+      cycling: Array.from(document.querySelectorAll(`#${section}CyclingRowsWrap .cycling-row`)).map(row => ({
+        item:  row.querySelector(`.${section}-item`)?.value.trim()  ?? '',
+        price: '$' + (row.querySelector(`.${section}-price`)?.value.trim() ?? ''),
+        month: row.querySelector(`.${section}-month`)?.value ?? '',
+      })),
+      pinned: {
+        item:  document.getElementById(`${section}PinnedItem`).value.trim(),
+        price: '$' + document.getElementById(`${section}PinnedPrice`).value.trim(),
+        month: document.getElementById(`${section}PinnedMonth`).value,
+      }
+    };
+  }
+
+  document.getElementById('addFoodWasteCyclingRowBtn').addEventListener('click', () => addCyclingRowEl('foodWaste'));
+  document.getElementById('addFoodCostCyclingRowBtn').addEventListener('click',  () => addCyclingRowEl('foodCost'));
+
+  async function loadData() {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(res.status);
+      const d = await res.json();
+
+      document.getElementById('monthlyFocus').value     = d.monthlyFocus     || '';
+      document.getElementById('monthlyFocusDesc').value = d.monthlyFocusDesc || '';
+      document.getElementById('focusItemName').value  = d.focusItem?.name || '';
+      document.getElementById('focusItemDesc').value  = d.focusItem?.description || '';
+      const label1 = d.cem?.metric1?.label || 'Metric 1';
+      const label2 = d.cem?.metric2?.label || 'Metric 2';
+      document.getElementById('cemLabel1').value          = label1;
+      document.getElementById('cemCard1Header').textContent = label1;
+      document.getElementById('cemGoal1').value           = d.cem?.metric1?.goal ?? '';
+      document.getElementById('cemActual1').value         = d.cem?.metric1?.actual ?? '';
+      document.getElementById('cemLabel2').value          = label2;
+      document.getElementById('cemCard2Header').textContent = label2;
+      document.getElementById('cemGoal2').value           = d.cem?.metric2?.goal ?? '';
+      document.getElementById('cemActual2').value         = d.cem?.metric2?.actual ?? '';
+      document.getElementById('erqaTitle').value      = d.erqa?.title || '';
+      document.getElementById('erqaBody').value       = d.erqa?.body || '';
+
+      loadFoodSection('foodWaste', d.foodWaste);
+      loadFoodSection('foodCost',  d.foodCost);
+    } catch (e) {
+      console.error('loadData failed:', e);
+      showToast('Could not load current data.', false);
+    }
+  }
+
+  function showToast(msg, success) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (success ? 'success' : 'error');
+    t.style.display = 'inline';
+    setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+
+  function downloadSnapshot(payload) {
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const lines = [
+      'BOH Score Screen — Metrics Snapshot',
+      `Date: ${date}`,
+      '=====================================',
+      '',
+      'MONTHLY FOCUS',
+      `  ${payload.monthlyFocus}`,
+      ...(payload.monthlyFocusDesc ? [`  ${payload.monthlyFocusDesc}`] : []),
+      '',
+      'FOCUS ITEM',
+      `  Name:        ${payload.focusItem.name}`,
+      `  Description: ${payload.focusItem.description}`,
+      '',
+      'CEM SCORES',
+      `  Metric 1 — ${payload.cem.metric1.label}`,
+      `    Goal:   ${payload.cem.metric1.goal}`,
+      `    Actual: ${payload.cem.metric1.actual}`,
+      '',
+      `  Metric 2 — ${payload.cem.metric2.label}`,
+      `    Goal:   ${payload.cem.metric2.goal}`,
+      `    Actual: ${payload.cem.metric2.actual}`,
+      '',
+      'ERQA OPPORTUNITIES',
+      `  Title: ${payload.erqa.title}`,
+      `  Body:  ${payload.erqa.body}`,
+      '',
+      'FOOD WASTE',
+      '  Cycling:',
+      ...(payload.foodWaste.cycling.length
+        ? payload.foodWaste.cycling.map(r => `    ${r.item.padEnd(20)} ${r.price} (${r.month})`)
+        : ['    (none)']),
+      '  Pinned:',
+      `    ${payload.foodWaste.pinned.item.padEnd(20)} ${payload.foodWaste.pinned.price} (${payload.foodWaste.pinned.month})`,
+      '',
+      'FOOD COST',
+      '  Cycling:',
+      ...(payload.foodCost.cycling.length
+        ? payload.foodCost.cycling.map(r => `    ${r.item.padEnd(20)} ${r.price} (${r.month})`)
+        : ['    (none)']),
+      '  Pinned:',
+      `    ${payload.foodCost.pinned.item.padEnd(20)} ${payload.foodCost.pinned.price} (${payload.foodCost.pinned.month})`,
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `boh-metrics-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('adminForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saving = e.submitter?.id === 'btnSave';
+    const btnSave   = document.getElementById('btnSave');
+    const btnNoSave = document.getElementById('btnNoSave');
+    btnSave.disabled = true;
+    btnNoSave.disabled = true;
+
+    const payload = {
+      monthlyFocus:     document.getElementById('monthlyFocus').value.trim(),
+      monthlyFocusDesc: document.getElementById('monthlyFocusDesc').value.trim(),
+      focusItem: {
+        name: document.getElementById('focusItemName').value.trim(),
+        description: document.getElementById('focusItemDesc').value.trim()
+      },
+      cem: {
+        metric1: {
+          label:  document.getElementById('cemLabel1').value.trim(),
+          goal:   Number(document.getElementById('cemGoal1').value),
+          actual: Number(document.getElementById('cemActual1').value)
+        },
+        metric2: {
+          label:  document.getElementById('cemLabel2').value.trim(),
+          goal:   Number(document.getElementById('cemGoal2').value),
+          actual: Number(document.getElementById('cemActual2').value)
+        }
+      },
+      erqa: {
+        title: document.getElementById('erqaTitle').value.trim(),
+        body:  document.getElementById('erqaBody').value.trim()
+      },
+      foodWaste: buildFoodSection('foodWaste'),
+      foodCost:  buildFoodSection('foodCost'),
+      quote: '"Showing genuine care by engaging in moments that enrich and restore those we serve."'
+    };
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(res.status);
+      if (saving) downloadSnapshot(payload);
+      showToast('Uploaded! Display will update within 30 seconds.', true);
+    } catch (err) {
+      showToast('Upload failed. Check your connection.', false);
+    } finally {
+      btnSave.disabled = false;
+      btnNoSave.disabled = false;
+    }
+  });
+
+  loadData();
+</script>
+</body>
+</html>

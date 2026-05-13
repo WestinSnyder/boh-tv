@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOH Score Screen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #E31837;
+      --navy: #1B365D;
+      --border: #d0d0d0;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--navy);
+      font-family: 'Nunito', system-ui, sans-serif;
+      color: var(--text);
+    }
+
+    .screen {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--red);
+      color: #fff;
+      padding: 1.2vh 2.5vw;
+      display: flex;
+      align-items: center;
+      gap: 1vw;
+      flex-shrink: 0;
+    }
+    .header-logo  { font-size: 5vh;   font-weight: 900; letter-spacing: -0.02em; line-height: 1; }
+    .header-title { font-size: 3.8vh; font-weight: 700; }
+
+    /* ── GRID ── */
+    .grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 1.2vh 1.2vw;
+      padding: 1.2vh 1.4vw;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Cell placement */
+    .cell-focus-item { grid-column: 1 / span 2; grid-row: 1; }
+    .cell-monthly    { grid-column: 3;           grid-row: 1; }
+    .cell-cem1       { grid-column: 1;           grid-row: 2; }
+    .cell-erqa       { grid-column: 2 / span 2;  grid-row: 2; }
+    .cell-cem2       { grid-column: 1;           grid-row: 3; }
+    .cell-food-cost  { grid-column: 2;           grid-row: 3; }
+    .cell-food-waste { grid-column: 3;           grid-row: 3; }
+
+    /* Cell base */
+    .cell {
+      background: var(--card-bg);
+      border: 1.5px solid #d0d0d0;
+      border-radius: 8px;
+      padding: 1.2vh 1.4vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Section label — red text with underline */
+    .card-label {
+      font-size: 1.5vh;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      border-bottom: 1.5px solid var(--red);
+      padding-bottom: 0.4vh;
+      margin-bottom: 0.9vh;
+      flex-shrink: 0;
+    }
+
+    /* ── FOCUS ITEM ── */
+    .focus-item-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .focus-item-name {
+      font-size: 7vh;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 0.6vh;
+    }
+    .focus-item-desc {
+      font-size: 2.9vh;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* ── MONTHLY FOCUS ── */
+    .monthly-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .focus-value {
+      font-size: 7.5vh;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .focus-desc {
+      font-size: 2.5vh;
+      color: #555;
+      line-height: 1.5;
+      margin-top: 0.5vh;
+    }
+
+    /* ── ERQA ── */
+    .erqa-body-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .erqa-title {
+      font-size: 5vh;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 0.6vh;
+    }
+    .erqa-desc {
+      font-size: 2.9vh;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    /* ── CEM CELLS ── */
+    .cem-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cem-scores {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.2vw;
+    }
+    .cem-score-block { text-align: center; }
+    .cem-score-sub {
+      font-size: 1.4vh;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3vh;
+    }
+    .cem-score-num {
+      font-size: 9vh;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--text);
+    }
+    .cem-score-num.below-goal { color: var(--red); }
+    .cem-score-num.above-goal { color: #1a7f37; }
+    .cem-divider {
+      font-size: 3vh;
+      color: #ccc;
+      padding-bottom: 0.8vh;
+    }
+
+    /* ── FOOD LISTS ── */
+    .food-list { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .food-header {
+      display: flex;
+      align-items: center;
+      font-size: 1.4vh;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      padding: 0.5vh 0.6vw;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .food-cycling-viewport {
+      height: calc(2 * 4.5vh);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .food-cycling-inner {
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+    }
+    .food-row {
+      display: flex;
+      align-items: center;
+      min-height: 4.5vh;
+      padding: 0 0.6vw;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .food-row-total {
+      background: #fdf0f2;
+      border-top: 1.5px solid var(--border);
+      border-bottom: none;
+    }
+    .food-col-item  { flex: 2; font-size: 2.6vh; font-weight: 700; }
+    .food-col-month { flex: 1; font-size: 2.6vh; font-weight: 600; color: #555; }
+    .food-col-price { flex: 1; font-size: 2.6vh; font-weight: 700; color: var(--red); text-align: right; }
+
+    /* ── QUOTE ── */
+    .quote-bar {
+      flex-shrink: 0;
+      padding: 0.8vh 1.8vw;
+      font-size: 2.2vh;
+      font-style: italic;
+      color: #ccd4df;
+      text-align: center;
+    }
+
+    .status {
+      position: fixed;
+      bottom: 5px;
+      right: 8px;
+      font-size: 0.8vh;
+      color: #aaa;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="header">
+    <div class="header-logo">BOH</div>
+    <div class="header-title">Score Screen</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- row 1, cols 1-2 -->
+    <div class="cell cell-focus-item">
+      <div class="card-label">Focus Item</div>
+      <div class="focus-item-body">
+        <div class="focus-item-name" id="focusItemName">—</div>
+        <div class="focus-item-desc" id="focusItemDesc"></div>
+      </div>
+    </div>
+
+    <!-- row 1, col 3 -->
+    <div class="cell cell-monthly">
+      <div class="card-label">Monthly Focus</div>
+      <div class="monthly-body">
+        <div class="focus-value" id="monthlyFocus">—</div>
+        <div class="focus-desc" id="monthlyFocusDesc"></div>
+      </div>
+    </div>
+
+    <!-- row 2, col 1 -->
+    <div class="cell cell-cem1">
+      <div class="card-label" id="cemLabel1">CEM</div>
+      <div class="cem-body">
+        <div class="cem-scores">
+          <div class="cem-score-block">
+            <div class="cem-score-sub">Goal</div>
+            <div class="cem-score-num" id="cemGoal1">—</div>
+          </div>
+          <div class="cem-divider">/</div>
+          <div class="cem-score-block">
+            <div class="cem-score-sub">Actual</div>
+            <div class="cem-score-num" id="cemActual1">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- row 2, cols 2-3 -->
+    <div class="cell cell-erqa">
+      <div class="card-label">ERQA Opportunities</div>
+      <div class="erqa-body-wrap">
+        <div class="erqa-title" id="erqaTitle">—</div>
+        <div class="erqa-desc" id="erqaBody"></div>
+      </div>
+    </div>
+
+    <!-- row 3, col 1 -->
+    <div class="cell cell-cem2">
+      <div class="card-label" id="cemLabel2">CEM</div>
+      <div class="cem-body">
+        <div class="cem-scores">
+          <div class="cem-score-block">
+            <div class="cem-score-sub">Goal</div>
+            <div class="cem-score-num" id="cemGoal2">—</div>
+          </div>
+          <div class="cem-divider">/</div>
+          <div class="cem-score-block">
+            <div class="cem-score-sub">Actual</div>
+            <div class="cem-score-num" id="cemActual2">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- row 3, col 2 -->
+    <div class="cell cell-food-cost">
+      <div class="card-label">Food Cost</div>
+      <div class="food-list">
+        <div class="food-header">
+          <span class="food-col-item">Item</span>
+          <span class="food-col-month">Month</span>
+          <span class="food-col-price">Price</span>
+        </div>
+        <div class="food-cycling-viewport" id="foodCostViewport"></div>
+        <div class="food-row food-row-total" id="foodCostTotal"></div>
+      </div>
+    </div>
+
+    <!-- row 3, col 3 -->
+    <div class="cell cell-food-waste">
+      <div class="card-label">Food Waste</div>
+      <div class="food-list">
+        <div class="food-header">
+          <span class="food-col-item">Item</span>
+          <span class="food-col-month">Month</span>
+          <span class="food-col-price">Price</span>
+        </div>
+        <div class="food-cycling-viewport" id="foodWasteViewport"></div>
+        <div class="food-row food-row-total" id="foodWasteTotal"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="quote-bar" id="quote"></div>
+
+</div>
+
+<div class="status" id="status"></div>
+
+<script>
+  const API_URL = '/boh/api/data';
+  const POLL_INTERVAL = 30000;
+  const CYCLE_INTERVAL = 5000;
+
+  const cycles = {
+    foodWaste: { rows: [], index: 0, timer: null, pinned: null, viewportId: 'foodWasteViewport', totalId: 'foodWasteTotal' },
+    foodCost:  { rows: [], index: 0, timer: null, pinned: null, viewportId: 'foodCostViewport',  totalId: 'foodCostTotal'  },
+  };
+
+  function cemClass(actual, goal) {
+    if (actual > goal) return ' above-goal';
+    if (actual < goal) return ' below-goal';
+    return '';
+  }
+
+  function makeRowEl(r) {
+    const div = document.createElement('div');
+    div.className = 'food-row';
+    const s = (cls, val) => { const el = document.createElement('span'); el.className = cls; el.textContent = val; return el; };
+    div.append(s('food-col-item', r.item), s('food-col-month', r.month), s('food-col-price', r.price));
+    return div;
+  }
+
+  function makeEmptyRowEl() {
+    const div = document.createElement('div');
+    div.className = 'food-row';
+    return div;
+  }
+
+  function setRowContent(el, r) {
+    el.innerHTML = '';
+    const s = (cls, val) => { const span = document.createElement('span'); span.className = cls; span.textContent = val; return span; };
+    el.append(s('food-col-item', r.item), s('food-col-month', r.month), s('food-col-price', r.price));
+  }
+
+  function buildCyclingInner(c) {
+    const inner = document.createElement('div');
+    inner.className = 'food-cycling-inner';
+    for (let i = 0; i < 2; i++) {
+      inner.appendChild(i < c.rows.length
+        ? makeRowEl(c.rows[(c.index + i) % c.rows.length])
+        : makeEmptyRowEl());
+    }
+    return inner;
+  }
+
+  function scrollCycle(c) {
+    if (c.rows.length <= 2) return;
+    const viewport = document.getElementById(c.viewportId);
+    if (!viewport) return;
+    const inner = viewport.querySelector('.food-cycling-inner');
+    if (!inner?.firstChild) return;
+
+    const rowH = inner.firstChild.offsetHeight;
+    inner.appendChild(makeRowEl(c.rows[(c.index + 2) % c.rows.length]));
+    inner.style.transition = 'transform 0.5s ease';
+    inner.style.transform  = `translateY(-${rowH}px)`;
+
+    setTimeout(() => {
+      inner.removeChild(inner.firstChild);
+      inner.style.transition = 'none';
+      inner.style.transform  = 'translateY(0)';
+      c.index = (c.index + 1) % c.rows.length;
+    }, 520);
+  }
+
+  function initFoodSection(key, fc) {
+    const c = cycles[key];
+    if (c.timer) clearInterval(c.timer);
+    c.rows   = fc?.cycling || [];
+    c.pinned = fc?.pinned  || null;
+    c.index  = 0;
+
+    const viewport = document.getElementById(c.viewportId);
+    if (viewport) { viewport.innerHTML = ''; viewport.appendChild(buildCyclingInner(c)); }
+
+    const total = document.getElementById(c.totalId);
+    if (total) {
+      if (c.pinned?.item) setRowContent(total, c.pinned);
+      else total.innerHTML = '';
+    }
+
+    if (c.rows.length > 2) {
+      c.timer = setInterval(() => scrollCycle(c), CYCLE_INTERVAL);
+    }
+  }
+
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function render(d) {
+    set('monthlyFocus',     d.monthlyFocus         || '—');
+    set('monthlyFocusDesc', d.monthlyFocusDesc     || '');
+    set('focusItemName', d.focusItem?.name     || '—');
+    set('focusItemDesc', d.focusItem?.description || '');
+
+    const m1 = d.cem?.metric1 || {};
+    const m2 = d.cem?.metric2 || {};
+
+    set('cemLabel1', m1.label || '—');
+    set('cemGoal1',  m1.goal  ?? '—');
+    const a1 = document.getElementById('cemActual1');
+    if (a1) { a1.textContent = m1.actual ?? '—'; a1.className = 'cem-score-num' + cemClass(m1.actual, m1.goal); }
+
+    set('cemLabel2', m2.label || '—');
+    set('cemGoal2',  m2.goal  ?? '—');
+    const a2 = document.getElementById('cemActual2');
+    if (a2) { a2.textContent = m2.actual ?? '—'; a2.className = 'cem-score-num' + cemClass(m2.actual, m2.goal); }
+
+    set('erqaTitle', d.erqa?.title || '—');
+    set('erqaBody',  d.erqa?.body  || '');
+
+    initFoodSection('foodCost',  d.foodCost);
+    initFoodSection('foodWaste', d.foodWaste);
+
+    set('quote',  d.quote || '');
+    set('status', `updated ${new Date().toLocaleTimeString()}`);
+  }
+
+  async function fetchData() {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(res.status);
+      render(await res.json());
+    } catch (e) {
+      console.warn('Fetch failed:', e);
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, POLL_INTERVAL);
+</script>
+</body>
+</html>

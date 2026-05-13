@@ -1,0 +1,7 @@
+node_modules
+.DS_Store
+.claude
+*.JPG
+*.jpg
+*.png
+layout_outline.png

@@ -1,0 +1,73 @@
+{
+  "monthlyFocus": "Time",
+  "monthlyFocusDesc": "",
+  "focusItem": {
+    "name": "Pickles!",
+    "description": "How do you place perfect pickles?"
+  },
+  "cem": {
+    "metric1": {
+      "label": "Taste",
+      "goal": 80,
+      "actual": 82
+    },
+    "metric2": {
+      "label": "Temperature",
+      "goal": 80,
+      "actual": 76
+    }
+  },
+  "erqa": {
+    "title": "Fry Temperatures",
+    "body": "Don't let them sit more than 2 minutes in the chute!"
+  },
+  "foodWaste": {
+    "cycling": [
+      {
+        "item": "Filets",
+        "price": "$657.10",
+        "month": "February"
+      },
+      {
+        "item": "Nuggets",
+        "price": "$453.39",
+        "month": "February"
+      },
+      {
+        "item": "Grilled Nuggets",
+        "price": "$275.40",
+        "month": "February"
+      }
+    ],
+    "pinned": {
+      "item": "Total Waste",
+      "price": "$8,332",
+      "month": "March"
+    }
+  },
+  "foodCost": {
+    "cycling": [
+      {
+        "item": "Nuggets",
+        "price": "$784.60",
+        "month": "February"
+      },
+      {
+        "item": "Filets",
+        "price": "$1285.20",
+        "month": "February"
+      },
+      {
+        "item": "Grilled Nuggets",
+        "price": "$649.20",
+        "month": "February"
+      }
+    ],
+    "pinned": {
+      "item": "Total Cost",
+      "price": "$3729.80",
+      "month": "March"
+    }
+  },
+  "quote": "\"Showing genuine care by engaging in moments that enrich and restore those we serve.\""
+}

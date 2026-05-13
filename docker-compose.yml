@@ -1,0 +1,10 @@
+services:
+  boh-tv:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./boh/boh-data.json:/app/boh/boh-data.json
+    restart: unless-stopped
+    environment:
+      - PORT=3000
