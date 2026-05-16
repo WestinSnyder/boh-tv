@@ -13,9 +13,9 @@
     }
   },
   "leaderboard": [
-    { "name": "Alex Johnson", "position": "Breader", "pctToGoal": 104 },
-    { "name": "Jordan Lee",   "position": "Breader", "pctToGoal": 98  },
-    { "name": "Sam Rivera",   "position": "Breader", "pctToGoal": 91  }
+    { "name": "Alex Johnson", "pctToGoal": 104 },
+    { "name": "Jordan Lee",   "pctToGoal": 98  },
+    { "name": "Sam Rivera",   "pctToGoal": 91  }
   ],
   "erqa": {
     "title": "Fry Temperatures",
