@@ -390,21 +390,29 @@
         </div>
       </div>
 
-      <!-- row 3, col 1: leaderboard -->
+      <!-- row 2, cols 2-3: leaderboard -->
       <div class="card ag-leaderboard">
         <div class="card-header">Breader Leaderboard</div>
-        <div class="card-body">
-          <div class="food-sublabel">1st Place</div>
-          <div class="field"><label>Name</label><input type="text" id="lb1Name" /></div>
-          <div class="field"><label>% To Goal</label><input type="number" id="lb1PctToGoal" min="0" /></div>
-          <hr class="food-divider" />
-          <div class="food-sublabel">2nd Place</div>
-          <div class="field"><label>Name</label><input type="text" id="lb2Name" /></div>
-          <div class="field"><label>% To Goal</label><input type="number" id="lb2PctToGoal" min="0" /></div>
-          <hr class="food-divider" />
-          <div class="food-sublabel">3rd Place</div>
-          <div class="field"><label>Name</label><input type="text" id="lb3Name" /></div>
-          <div class="field"><label>% To Goal</label><input type="number" id="lb3PctToGoal" min="0" /></div>
+        <div class="card-body" style="padding: 14px 20px;">
+          <div style="display: flex; gap: 16px;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+              <div class="food-sublabel">1st Place</div>
+              <div class="field"><label>Name</label><input type="text" id="lb1Name" /></div>
+              <div class="field"><label>% To Goal</label><input type="number" id="lb1PctToGoal" min="0" /></div>
+            </div>
+            <div style="width: 1px; background: var(--border); flex-shrink: 0;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+              <div class="food-sublabel">2nd Place</div>
+              <div class="field"><label>Name</label><input type="text" id="lb2Name" /></div>
+              <div class="field"><label>% To Goal</label><input type="number" id="lb2PctToGoal" min="0" /></div>
+            </div>
+            <div style="width: 1px; background: var(--border); flex-shrink: 0;"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+              <div class="food-sublabel">3rd Place</div>
+              <div class="field"><label>Name</label><input type="text" id="lb3Name" /></div>
+              <div class="field"><label>% To Goal</label><input type="number" id="lb3PctToGoal" min="0" /></div>
+            </div>
+          </div>
         </div>
       </div>
 
