@@ -1,9 +1,9 @@
 {
-  "monthlyFocus": "Time",
-  "monthlyFocusDesc": "",
+  "monthlyFocus": "Monthly Focus",
+  "monthlyFocusDesc": "Monthly focus description",
   "focusItem": {
-    "name": "Pickles!",
-    "description": "How do you place perfect pickles?"
+    "name": "Focus Item",
+    "description": "Focus item description"
   },
   "cem": {
     "metric1": {
@@ -13,13 +13,25 @@
     }
   },
   "leaderboard": [
-    { "name": "Alex Johnson", "pctToGoal": 104 },
-    { "name": "Jordan Lee",   "pctToGoal": 98  },
-    { "name": "Sam Rivera",   "pctToGoal": 91  }
+    {
+      "name": "Alex Johnson",
+      "position": "Breader",
+      "pctToGoal": 104
+    },
+    {
+      "name": "Jordan Lee",
+      "position": "Breader",
+      "pctToGoal": 98
+    },
+    {
+      "name": "Sam Rivera",
+      "position": "Breader",
+      "pctToGoal": 91
+    }
   ],
   "erqa": {
-    "title": "Fry Temperatures",
-    "body": "Don't let them sit more than 2 minutes in the chute!"
+    "title": "ERQA Opportunities",
+    "body": "ERQA Opportunities description"
   },
   "foodWaste": {
     "cycling": [
