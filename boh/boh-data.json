@@ -10,13 +10,13 @@
       "label": "Taste",
       "goal": 80,
       "actual": 82
-    },
-    "metric2": {
-      "label": "Temperature",
-      "goal": 80,
-      "actual": 76
     }
   },
+  "leaderboard": [
+    { "name": "Alex Johnson", "position": "Breader", "pctToGoal": 104 },
+    { "name": "Jordan Lee",   "position": "Breader", "pctToGoal": 98  },
+    { "name": "Sam Rivera",   "position": "Breader", "pctToGoal": 91  }
+  ],
   "erqa": {
     "title": "Fry Temperatures",
     "body": "Don't let them sit more than 2 minutes in the chute!"

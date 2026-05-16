@@ -62,7 +62,8 @@
     .ag-cem-col    { grid-column: 1;           grid-row: 2; display: flex; flex-direction: column; gap: 16px; }
     .ag-cem-col > .card { flex: 1; }
     .ag-erqa       { grid-column: 2 / span 2;  grid-row: 2; }
-    .ag-food-row   { grid-column: 1 / span 3;  grid-row: 3; display: flex; gap: 16px; align-items: start; }
+    .ag-leaderboard { grid-column: 1;           grid-row: 3; }
+    .ag-food-row    { grid-column: 2 / span 2;  grid-row: 3; display: flex; gap: 16px; align-items: start; }
     .ag-food-row > .card { flex: 1; }
 
     /* ── CARD ── */
@@ -354,7 +355,7 @@
         </div>
       </div>
 
-      <!-- row 2, col 1: both CEM metrics stacked -->
+      <!-- row 2, col 1: CEM metric -->
       <div class="ag-cem-col">
         <div class="card">
           <div class="card-header" id="cemCard1Header">CEM — Metric 1</div>
@@ -368,22 +369,6 @@
               <div class="field">
                 <label>Actual</label>
                 <input type="number" id="cemActual1" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="cemCard2Header">CEM — Metric 2</div>
-          <input type="hidden" id="cemLabel2" />
-          <div class="card-body">
-            <div class="score-row">
-              <div class="field">
-                <label>Goal</label>
-                <input type="number" id="cemGoal2" />
-              </div>
-              <div class="field">
-                <label>Actual</label>
-                <input type="number" id="cemActual2" />
               </div>
             </div>
           </div>
@@ -405,7 +390,28 @@
         </div>
       </div>
 
-      <!-- row 3: both food sections side by side -->
+      <!-- row 3, col 1: leaderboard -->
+      <div class="card ag-leaderboard">
+        <div class="card-header">Breader Leaderboard</div>
+        <div class="card-body">
+          <div class="food-sublabel">1st Place</div>
+          <div class="field"><label>Name</label><input type="text" id="lb1Name" /></div>
+          <div class="field"><label>Position</label><input type="text" id="lb1Position" /></div>
+          <div class="field"><label>% To Goal</label><input type="number" id="lb1PctToGoal" min="0" /></div>
+          <hr class="food-divider" />
+          <div class="food-sublabel">2nd Place</div>
+          <div class="field"><label>Name</label><input type="text" id="lb2Name" /></div>
+          <div class="field"><label>Position</label><input type="text" id="lb2Position" /></div>
+          <div class="field"><label>% To Goal</label><input type="number" id="lb2PctToGoal" min="0" /></div>
+          <hr class="food-divider" />
+          <div class="food-sublabel">3rd Place</div>
+          <div class="field"><label>Name</label><input type="text" id="lb3Name" /></div>
+          <div class="field"><label>Position</label><input type="text" id="lb3Position" /></div>
+          <div class="field"><label>% To Goal</label><input type="number" id="lb3PctToGoal" min="0" /></div>
+        </div>
+      </div>
+
+      <!-- row 3, cols 2-3: food sections -->
       <div class="ag-food-row">
       <div class="card">
         <div class="card-header">Food Cost</div>
@@ -601,17 +607,20 @@
       document.getElementById('focusItemName').value  = d.focusItem?.name || '';
       document.getElementById('focusItemDesc').value  = d.focusItem?.description || '';
       const label1 = d.cem?.metric1?.label || 'Metric 1';
-      const label2 = d.cem?.metric2?.label || 'Metric 2';
-      document.getElementById('cemLabel1').value          = label1;
+      document.getElementById('cemLabel1').value            = label1;
       document.getElementById('cemCard1Header').textContent = label1;
-      document.getElementById('cemGoal1').value           = d.cem?.metric1?.goal ?? '';
-      document.getElementById('cemActual1').value         = d.cem?.metric1?.actual ?? '';
-      document.getElementById('cemLabel2').value          = label2;
-      document.getElementById('cemCard2Header').textContent = label2;
-      document.getElementById('cemGoal2').value           = d.cem?.metric2?.goal ?? '';
-      document.getElementById('cemActual2').value         = d.cem?.metric2?.actual ?? '';
+      document.getElementById('cemGoal1').value             = d.cem?.metric1?.goal ?? '';
+      document.getElementById('cemActual1').value           = d.cem?.metric1?.actual ?? '';
       document.getElementById('erqaTitle').value      = d.erqa?.title || '';
       document.getElementById('erqaBody').value       = d.erqa?.body || '';
+
+      const lb = d.leaderboard || [];
+      for (let i = 1; i <= 3; i++) {
+        const entry = lb[i - 1] || {};
+        document.getElementById(`lb${i}Name`).value      = entry.name      || '';
+        document.getElementById(`lb${i}Position`).value  = entry.position  || '';
+        document.getElementById(`lb${i}PctToGoal`).value = entry.pctToGoal ?? '';
+      }
 
       loadFoodSection('foodWaste', d.foodWaste);
       loadFoodSection('foodCost',  d.foodCost);
@@ -645,13 +654,12 @@
       `  Description: ${payload.focusItem.description}`,
       '',
       'CEM SCORES',
-      `  Metric 1 — ${payload.cem.metric1.label}`,
+      `  ${payload.cem.metric1.label}`,
       `    Goal:   ${payload.cem.metric1.goal}`,
       `    Actual: ${payload.cem.metric1.actual}`,
       '',
-      `  Metric 2 — ${payload.cem.metric2.label}`,
-      `    Goal:   ${payload.cem.metric2.goal}`,
-      `    Actual: ${payload.cem.metric2.actual}`,
+      'BREADER LEADERBOARD',
+      ...payload.leaderboard.map((e, i) => `  ${i + 1}. ${e.name} — ${e.position} — ${e.pctToGoal}%`),
       '',
       'ERQA OPPORTUNITIES',
       `  Title: ${payload.erqa.title}`,
@@ -702,13 +710,13 @@
           label:  document.getElementById('cemLabel1').value.trim(),
           goal:   Number(document.getElementById('cemGoal1').value),
           actual: Number(document.getElementById('cemActual1').value)
-        },
-        metric2: {
-          label:  document.getElementById('cemLabel2').value.trim(),
-          goal:   Number(document.getElementById('cemGoal2').value),
-          actual: Number(document.getElementById('cemActual2').value)
         }
       },
+      leaderboard: [1, 2, 3].map(i => ({
+        name:      document.getElementById(`lb${i}Name`).value.trim(),
+        position:  document.getElementById(`lb${i}Position`).value.trim(),
+        pctToGoal: Number(document.getElementById(`lb${i}PctToGoal`).value),
+      })),
       erqa: {
         title: document.getElementById('erqaTitle').value.trim(),
         body:  document.getElementById('erqaBody').value.trim()

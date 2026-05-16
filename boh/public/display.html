@@ -63,7 +63,7 @@
     .cell-monthly    { grid-column: 3;           grid-row: 1; }
     .cell-cem1       { grid-column: 1;           grid-row: 2; }
     .cell-erqa       { grid-column: 2 / span 2;  grid-row: 2; }
-    .cell-cem2       { grid-column: 1;           grid-row: 3; }
+    .cell-leaderboard { grid-column: 1;           grid-row: 3; }
     .cell-food-cost  { grid-column: 2;           grid-row: 3; }
     .cell-food-waste { grid-column: 3;           grid-row: 3; }
 
@@ -231,6 +231,36 @@
     .food-col-month { flex: 1; font-size: 2.6vh; font-weight: 600; color: #555; }
     .food-col-price { flex: 1; font-size: 2.6vh; font-weight: 700; color: var(--red); text-align: right; }
 
+    /* ── LEADERBOARD ── */
+    .lb-list { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .lb-header {
+      display: flex;
+      align-items: center;
+      font-size: 1.4vh;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #666;
+      padding: 0.5vh 0.6vw;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .lb-rows { display: flex; flex-direction: column; flex: 1; }
+    .lb-row {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      padding: 0 0.6vw;
+      border-bottom: 1px solid var(--border);
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-col-name { flex: 2; font-size: 2.5vh; font-weight: 700; }
+    .lb-col-pos  { flex: 2; font-size: 2.5vh; font-weight: 600; color: #555; }
+    .lb-col-pct  { flex: 1; font-size: 2.5vh; font-weight: 700; color: var(--red); text-align: right; }
+    .lb-row-first .lb-col-name,
+    .lb-row-first .lb-col-pos,
+    .lb-row-first .lb-col-pct { font-size: 3vh; }
+
     /* ── QUOTE ── */
     .quote-bar {
       flex-shrink: 0;
@@ -307,20 +337,15 @@
     </div>
 
     <!-- row 3, col 1 -->
-    <div class="cell cell-cem2">
-      <div class="card-label" id="cemLabel2">CEM</div>
-      <div class="cem-body">
-        <div class="cem-scores">
-          <div class="cem-score-block">
-            <div class="cem-score-sub">Goal</div>
-            <div class="cem-score-num" id="cemGoal2">—</div>
-          </div>
-          <div class="cem-divider">/</div>
-          <div class="cem-score-block">
-            <div class="cem-score-sub">Actual</div>
-            <div class="cem-score-num" id="cemActual2">—</div>
-          </div>
+    <div class="cell cell-leaderboard">
+      <div class="card-label">Breader Leaderboard</div>
+      <div class="lb-list">
+        <div class="lb-header">
+          <span class="lb-col-name">Name</span>
+          <span class="lb-col-pos">Position</span>
+          <span class="lb-col-pct">% to Goal</span>
         </div>
+        <div class="lb-rows" id="leaderboardRows"></div>
       </div>
     </div>
 
@@ -448,6 +473,23 @@
     }
   }
 
+  function renderLeaderboard(entries) {
+    const wrap = document.getElementById('leaderboardRows');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    (entries || []).slice(0, 3).forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (i === 0 ? ' lb-row-first' : '');
+      const s = (cls, val) => { const span = document.createElement('span'); span.className = cls; span.textContent = val; return span; };
+      row.append(
+        s('lb-col-name', entry.name     || '—'),
+        s('lb-col-pos',  entry.position || '—'),
+        s('lb-col-pct',  entry.pctToGoal != null ? entry.pctToGoal + '%' : '—')
+      );
+      wrap.appendChild(row);
+    });
+  }
+
   function set(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -460,17 +502,13 @@
     set('focusItemDesc', d.focusItem?.description || '');
 
     const m1 = d.cem?.metric1 || {};
-    const m2 = d.cem?.metric2 || {};
 
     set('cemLabel1', m1.label || '—');
     set('cemGoal1',  m1.goal  ?? '—');
     const a1 = document.getElementById('cemActual1');
     if (a1) { a1.textContent = m1.actual ?? '—'; a1.className = 'cem-score-num' + cemClass(m1.actual, m1.goal); }
 
-    set('cemLabel2', m2.label || '—');
-    set('cemGoal2',  m2.goal  ?? '—');
-    const a2 = document.getElementById('cemActual2');
-    if (a2) { a2.textContent = m2.actual ?? '—'; a2.className = 'cem-score-num' + cemClass(m2.actual, m2.goal); }
+    renderLeaderboard(d.leaderboard);
 
     set('erqaTitle', d.erqa?.title || '—');
     set('erqaBody',  d.erqa?.body  || '');
